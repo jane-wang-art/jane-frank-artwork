@@ -1,0 +1,94 @@
+{
+  "title": "Autumn Terrace / 秋日露台",
+  "author_credit": "Jane Wang",
+  "copyright_identity": "jane-wang-art",
+  "source_repository": "https://github.com/jane-wang-art/jane-frank-artwork",
+  "process": "AI-assisted artwork developed from user-provided designs, story direction and iterative feedback; selected files imported unchanged.",
+  "publication_authorization": "Owner explicitly approved public upload of this nine-image set and designated this repository.",
+  "imported_at_utc": "2026-09-26T07:46:12.930068+00:00",
+  "original_creation_date": null,
+  "note": "Import time is not creation time; hashes record integrity, not copyright registration or conclusive authorship.",
+  "images": [
+    {
+      "asset_id": "FJM-001-01-v001",
+      "path": "stories/001-autumn-terrace/publication-exports/01.png",
+      "bytes": 1412754,
+      "sha256": "6a0f5e8167bbca06b5cf2574746a3b2dd81d471773455c76b953714b9c8da0c4",
+      "git_blob_sha": "04fdf77ee135cfe8beab471b4945ee884cce5138",
+      "width": 1122,
+      "height": 1402
+    },
+    {
+      "asset_id": "FJM-001-02-v001",
+      "path": "stories/001-autumn-terrace/publication-exports/02.png",
+      "bytes": 1594934,
+      "sha256": "868eb58b1d08b739474e0012a531530c903ab38419e3b49a9c4d4b43eff910fc",
+      "git_blob_sha": "f1e5ddd69e2997eeb3c540ffe51c582a036824e8",
+      "width": 1122,
+      "height": 1402
+    },
+    {
+      "asset_id": "FJM-001-03-v001",
+      "path": "stories/001-autumn-terrace/publication-exports/03.png",
+      "bytes": 1545446,
+      "sha256": "316d3217bff43eebc8e6b084ff5edc1c8ea9a4e1b422e3eb296b73c268e8c008",
+      "git_blob_sha": "85e605f4b388a6b058812fb47ab3dd86d7839937",
+      "width": 1122,
+      "height": 1402
+    },
+    {
+      "asset_id": "FJM-001-04-v001",
+      "path": "stories/001-autumn-terrace/publication-exports/04.png",
+      "bytes": 1613473,
+      "sha256": "6bcbb20c91d2cf5ab0277e0ea222252e78fa37837ccdcb8fe4017cf92cc2b5bf",
+      "git_blob_sha": "e9292b0f7cbc4e1d110b180a612b7164a3eb788e",
+      "width": 1122,
+      "height": 1402
+    },
+    {
+      "asset_id": "FJM-001-05-v001",
+      "path": "stories/001-autumn-terrace/publication-exports/05.png",
+      "bytes": 1631969,
+      "sha256": "7bb05918e87199c856e14a2dbc8a224f3fd48de8ba794f1684b9b7d353b4c504",
+      "git_blob_sha": "05fbf9de54cf5fc0eb1716c7a07394ba496d067c",
+      "width": 1122,
+      "height": 1402
+    },
+    {
+      "asset_id": "FJM-001-06-v001",
+      "path": "stories/001-autumn-terrace/publication-exports/06.png",
+      "bytes": 1548005,
+      "sha256": "8f46b3ffb565a571d91754de442e8bf6dc8a2c9e694295b829ad0c63ff81a4f1",
+      "git_blob_sha": "97175dd2ed52ace953623fc6aff314f063384ba5",
+      "width": 1122,
+      "height": 1402
+    },
+    {
+      "asset_id": "FJM-001-07-v001",
+      "path": "stories/001-autumn-terrace/publication-exports/07.png",
+      "bytes": 1668145,
+      "sha256": "73775f7d2c897e4101797c68f26b27ec3b3dbab92df6235911c71b37cae5aa3a",
+      "git_blob_sha": "f3326ba913cc6720beb9df88ea3162789539f783",
+      "width": 1122,
+      "height": 1402
+    },
+    {
+      "asset_id": "FJM-001-08-v001",
+      "path": "stories/001-autumn-terrace/publication-exports/08.png",
+      "bytes": 1796787,
+      "sha256": "c7f80cc090fd621ebf2cad8a7dd47b18fcf7e495a03662f1f83cef390173da4e",
+      "git_blob_sha": "7323cc810fca9a4ebea0d8d3dc0aa40dadaef1ac",
+      "width": 1122,
+      "height": 1402
+    },
+    {
+      "asset_id": "FJM-001-09-v001",
+      "path": "stories/001-autumn-terrace/publication-exports/09.png",
+      "bytes": 1617498,
+      "sha256": "476b3a7dec4346f27616a507052a5b32d4d9af747554ee33abac80069c0f5cb8",
+      "git_blob_sha": "8aead05873bf053b8965580ef6ae107849cda909",
+      "width": 1122,
+      "height": 1402
+    }
+  ]
+}
