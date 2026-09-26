@@ -1,0 +1,125 @@
+name: Import approved artwork once
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/import-approved-artwork.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: approved-artwork-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    if: github.repository == 'jane-wang-art/jane-frank-artwork'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Validate approved archive and commit original PNG files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARCHIVE_URL: 'https://sdmntprkoreacentral.oaiusercontent.com/files/00000000-61a8-8206-9594-82edb6082786/raw?se=2026-09-26T07%3A47%3A28Z&sp=r&sv=2026-02-06&sr=b&scid=17b0b8ca-92fa-5275-a61b-3a10efe640f0&skoid=6980ab1e-b994-4668-84de-ad0444c9d08b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-25T18%3A38%3A57Z&ske=2026-09-26T18%3A38%3A57Z&sks=b&skv=2026-02-06&sig=MNIZIxhV9Ao1IjngXloVXP7uj0BIqKyfMdW47quzG5g%3D'
+        run: |
+          python3 - <<'PY'
+          import base64, datetime, hashlib, io, json, os, struct, urllib.request, zipfile
+
+          REPO = 'jane-wang-art/jane-frank-artwork'
+          assert os.environ['GITHUB_REPOSITORY'] == REPO
+          API = 'https://api.github.com/repos/' + REPO
+          SOURCE = 'https://github.com/' + REPO
+          ROOT = 'stories/001-autumn-terrace/'
+          expected = {
+              '01.png': '6a0f5e8167bbca06b5cf2574746a3b2dd81d471773455c76b953714b9c8da0c4',
+              '02.png': '868eb58b1d08b739474e0012a531530c903ab38419e3b49a9c4d4b43eff910fc',
+              '03.png': '316d3217bff43eebc8e6b084ff5edc1c8ea9a4e1b422e3eb296b73c268e8c008',
+              '04.png': '6bcbb20c91d2cf5ab0277e0ea222252e78fa37837ccdcb8fe4017cf92cc2b5bf',
+              '05.png': '7bb05918e87199c856e14a2dbc8a224f3fd48de8ba794f1684b9b7d353b4c504',
+              '06.png': '8f46b3ffb565a571d91754de442e8bf6dc8a2c9e694295b829ad0c63ff81a4f1',
+              '07.png': '73775f7d2c897e4101797c68f26b27ec3b3dbab92df6235911c71b37cae5aa3a',
+              '08.png': 'c7f80cc090fd621ebf2cad8a7dd47b18fcf7e495a03662f1f83cef390173da4e',
+              '09.png': '476b3a7dec4346f27616a507052a5b32d4d9af747554ee33abac80069c0f5cb8',
+          }
+          def api(path, payload=None, method=None):
+              headers = {
+                  'Accept': 'application/vnd.github+json',
+                  'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                  'X-GitHub-Api-Version': '2022-11-28',
+                  'User-Agent': 'approved-artwork-import',
+              }
+              data = None if payload is None else json.dumps(payload).encode()
+              if data is not None:
+                  headers['Content-Type'] = 'application/json'
+              req = urllib.request.Request(API + path, data=data, headers=headers,
+                  method=method or ('GET' if data is None else 'POST'))
+              with urllib.request.urlopen(req, timeout=90) as response:
+                  return json.load(response)
+
+          url = os.environ['ARCHIVE_URL']
+          print('::add-mask::' + url)
+          with urllib.request.urlopen(url, timeout=90) as response:
+              archive = response.read(20000001)
+          assert len(archive) <= 20000000, 'Unexpected archive size'
+          assert hashlib.sha256(archive).hexdigest() == '8fb23d0b7e4f3b146a04bfa0bc195c48a0681cbf2000024e6675cf4b3a3ca636', 'Archive hash mismatch'
+          files = {}
+          with zipfile.ZipFile(io.BytesIO(archive)) as package:
+              assert len(package.infolist()) == 9 and set(package.namelist()) == set(expected), 'Unexpected archive members'
+              for name in sorted(expected):
+                  assert package.getinfo(name).file_size < 3000000
+                  data = package.read(name)
+                  assert data.startswith(b'\x89PNG\r\n\x1a\n'), 'Not a PNG'
+                  assert hashlib.sha256(data).hexdigest() == expected[name], 'Image hash mismatch: ' + name
+                  files[ROOT + 'publication-exports/' + name] = data
+
+          records = []
+          entries = []
+          for path, data in files.items():
+              expected_blob = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+              blob = api('/git/blobs', {'content': base64.b64encode(data).decode(), 'encoding': 'base64'})
+              assert blob['sha'] == expected_blob, 'Git blob integrity mismatch'
+              entries.append({'path': path, 'mode': '100644', 'type': 'blob', 'sha': blob['sha']})
+              w, h = struct.unpack('>II', data[16:24])
+              records.append({'asset_id': 'FJM-001-' + path.rsplit('/', 1)[1][:2] + '-v001',
+                  'path': path, 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest(),
+                  'git_blob_sha': blob['sha'], 'width': w, 'height': h})
+              print('Validated and uploaded: ' + path)
+
+          metadata = {
+              'title': 'Autumn Terrace / 秋日露台',
+              'author_credit': 'Jane Wang',
+              'copyright_identity': 'jane-wang-art',
+              'source_repository': SOURCE,
+              'license': 'All rights reserved; paid written permission and visible attribution required for uses requiring permission.',
+              'publication_authorization': 'The owner explicitly approved uploading this nine-image set in the conversation and designated this repository as its destination.',
+              'process': 'AI-assisted artwork developed from user-provided designs, story direction and iterative feedback. Images imported unchanged from the selected nine-image set.',
+              'imported_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'original_creation_date': None,
+              'note': 'Import time is not creation time. Checksums establish file integrity, not copyright registration or conclusive authorship.',
+              'images': records,
+          }
+          entries.append({'path': ROOT + 'metadata.json', 'mode': '100644', 'type': 'blob',
+              'content': json.dumps(metadata, ensure_ascii=False, indent=2) + '\n'})
+          checksums = ''.join(r['sha256'] + '  ' + r['path'].split(ROOT, 1)[1] + '\n' for r in records)
+          entries.append({'path': ROOT + 'SHA256SUMS.txt', 'mode': '100644', 'type': 'blob', 'content': checksums})
+
+          parent = api('/git/ref/heads/main')['object']['sha']
+          commit = api('/git/commits/' + parent)
+          existing = api('/git/trees/' + commit['tree']['sha'] + '?recursive=1')
+          assert not existing.get('truncated'), 'Incomplete tree'
+          current = {e['path']: e for e in existing['tree']}
+          for item in entries:
+              if item['path'] in current:
+                  assert item.get('sha') == current[item['path']]['sha'], 'Refusing to overwrite: ' + item['path']
+          tree = api('/git/trees', {'base_tree': commit['tree']['sha'], 'tree': entries})
+          created = api('/git/commits', {'message': 'art: publish nine original terrace images credited to Jane Wang',
+              'tree': tree['sha'], 'parents': [parent]})
+          api('/git/refs/heads/main', {'sha': created['sha'], 'force': False}, 'PATCH')
+          verified = api('/git/trees/' + tree['sha'] + '?recursive=1')
+          indexed = {e['path']: e['sha'] for e in verified['tree']}
+          assert all(indexed[r['path']] == r['git_blob_sha'] for r in records)
+          print('Nine original PNGs committed and verified: ' + created['sha'])
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('Published all nine unchanged PNGs to ' + SOURCE + '.\n\nCommit: `' + created['sha'] + '`\n')
+          PY
