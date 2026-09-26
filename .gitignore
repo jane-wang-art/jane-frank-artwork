@@ -1,0 +1,36 @@
+# Local files and private working material; not an access-control mechanism.
+.DS_Store
+Thumbs.db
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+secrets.json
+/_local/
+/private/
+/_delivery/
+/licensing/executed/
+*.psd
+*.psb
+*.kra
+*.procreate
+*.zip
+
+# Publish images only after explicit selection; these nine files are approved.
+*.png
+*.jpg
+*.jpeg
+*.webp
+!stories/001-autumn-terrace/publication-exports/01.png
+!stories/001-autumn-terrace/publication-exports/02.png
+!stories/001-autumn-terrace/publication-exports/03.png
+!stories/001-autumn-terrace/publication-exports/04.png
+!stories/001-autumn-terrace/publication-exports/05.png
+!stories/001-autumn-terrace/publication-exports/06.png
+!stories/001-autumn-terrace/publication-exports/07.png
+!stories/001-autumn-terrace/publication-exports/08.png
+!stories/001-autumn-terrace/publication-exports/09.png
